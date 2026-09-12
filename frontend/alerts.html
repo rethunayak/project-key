@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope Safe – Alert Center & Field Feedback</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .alert-card {
+      border-left: 6px solid #ef4444;
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .alert-card.HIGH {
+      border-left-color: #f97316;
+    }
+    .alert-card.MODERATE {
+      border-left-color: #f59e0b;
+    }
+    .alert-card.SIMULATION {
+      border-left-color: #3b82f6;
+      background-color: rgba(30, 58, 138, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      ⛰️ Slope Safe
+      <span class="badge">SIH26001</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="prediction.html">AI Prediction</a></li>
+      <li><a href="map.html">GIS Risk Map</a></li>
+      <li><a href="alerts.html" class="active">Alert Center</a></li>
+      <li><a href="performance.html">Model Performance</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="notice-banner">
+      <strong>DISASTER RESPONSE PROTOCOL:</strong> Early action notices broadcast directly to State Disaster Management Authorities (SDMAs), Border Roads Organisation (BRO), and National Disaster Response Force (NDRF) battalions in Northeast India.
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h1 style="font-size: 1.8rem; font-weight: 700;">Early Warning Alert Center</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Active threat advisories and ground-truth field feedback loops.</p>
+      </div>
+      <div>
+        <button class="btn btn-secondary" onclick="openSimModal()" style="border: 1px dashed #3b82f6; color: #60a5fa;">
+          🧪 Run Drill / Simulation Alert
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2">
+      <!-- Active Alerts Feed -->
+      <div>
+        <h3 style="margin-bottom: 14px;">Active Warnings & Bulletins</h3>
+        <div id="alerts-container">
+          <!-- Populated dynamically -->
+          <div class="alert-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="badge-pill badge-critical">CRITICAL LANDSLIDE RISK</span>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">45 mins ago</span>
+            </div>
+            <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 6px;">Location: Kohima NH-29 Bypass</h4>
+            <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;">
+              <strong>Reason:</strong> Heavy rainfall (195.5mm) + high soil moisture (88.4%) + steep slope (43.5°).
+            </p>
+            <div style="font-size: 0.85rem; color: #fca5a5; background: rgba(239, 68, 68, 0.15); padding: 8px; border-radius: 6px;">
+              <strong>Recommended Action:</strong> Field inspection and early warning. Preemptive vehicular diversion to alternate routes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Field Feedback Form -->
+      <div>
+        <div class="card">
+          <h3>📝 Field Feedback & Ground Observation</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+            Submit real-time ground truth observations to validate AI risk predictions and update future model calibration.
+          </p>
+
+          <form onsubmit="handleReportSubmit(event)">
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 4px;">Monitored Location</label>
+              <input type="text" id="report-location" class="form-control" value="Kohima NH-29 Mile 14" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;" required>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 4px;">Actual Condition Observed</label>
+              <select id="report-condition" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                <option value="Landslide observed">Landslide observed</option>
+                <option value="No landslide observed">No landslide observed</option>
+                <option value="Minor movement" selected>Minor movement</option>
+                <option value="Road blockage">Road blockage</option>
+                <option value="Soil cracking">Soil cracking</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label style="display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 4px;">Observation Notes</label>
+              <textarea id="report-notes" rows="3" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;" required placeholder="Describe tension cracks, water seepage, debris volume, road passability...">Active surface slumping along road retaining wall shoulder. Water seepage noted.</textarea>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 4px;">Reported By</label>
+              <input type="text" id="report-officer" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;" value="Er. K. Lotha (PWD Hills / SDRF Liaison)" required>
+            </div>
+
+            <button type="submit" id="report-btn" class="btn btn-primary" style="width: 100%; padding: 10px;">
+              Submit Field Report to Database
+            </button>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top: 16px;">
+          <h4 style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 8px;">Ground Truth Feedback Loop</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
+            Submitted reports are permanently recorded in the <code>field_reports</code> table. This establishes a continuous improvement dataset to retrain and calibrate the Random Forest & XGBoost classifiers with actual geotechnical occurrences.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simulation Modal -->
+  <div id="sim-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 500px; width: 90%; margin: auto;">
+      <h3 style="color: #60a5fa;">🧪 Trigger Simulated / Test Alert</h3>
+      <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 14px;">
+        Generate a test drill alert. This will be visibly marked as <strong>[DEMO / SIMULATION]</strong>.
+      </p>
+
+      <form onsubmit="handleSimSubmit(event)">
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 0.85rem; color: #cbd5e1;">Drill Corridor</label>
+          <input type="text" id="sim-loc" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 6px;" value="Champhai Border Highway KM 22">
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 0.85rem; color: #cbd5e1;">Risk Level</label>
+          <select id="sim-level" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 6px;">
+            <option value="CRITICAL">CRITICAL</option>
+            <option value="HIGH">HIGH</option>
+            <option value="MODERATE">MODERATE</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.85rem; color: #cbd5e1;">Simulated Trigger Reason</label>
+          <input type="text" id="sim-reason" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 6px;" value="Simulated cloudburst (210mm) + saturated clay subgrade">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="closeSimModal()">Cancel</button>
+          <button type="submit" class="btn btn-danger">Broadcast Simulated Alert</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function openSimModal() {
+      document.getElementById('sim-modal').style.display = 'flex';
+    }
+    function closeSimModal() {
+      document.getElementById('sim-modal').style.display = 'none';
+    }
+
+    async function loadAlerts() {
+      const list = await fetchAlerts();
+      const container = document.getElementById('alerts-container');
+      if (list && list.length) {
+        container.innerHTML = '';
+        list.forEach(a => {
+          const div = document.createElement('div');
+          const isSim = a.status === 'SIMULATION' || (a.message && a.message.includes('SIMULATION'));
+          div.className = `alert-card ${a.risk_level} ${isSim ? 'SIMULATION' : ''}`;
+          div.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="badge-pill badge-${(a.risk_level || 'critical').toLowerCase()}">
+                ${isSim ? '🧪 DEMO / SIMULATION' : (a.risk_level + ' RISK')}
+              </span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">${new Date(a.created_at).toLocaleTimeString()}</span>
+            </div>
+            <h4 style="font-size: 1rem; color: #fff; margin-bottom: 4px;">Location: ${a.location}</h4>
+            <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">${a.message}</p>
+          `;
+          container.appendChild(div);
+        });
+      }
+    }
+
+    async function handleSimSubmit(e) {
+      e.preventDefault();
+      await simulateAlert({
+        location: document.getElementById('sim-loc').value,
+        risk_level: document.getElementById('sim-level').value,
+        reason: document.getElementById('sim-reason').value
+      });
+      closeSimModal();
+      loadAlerts();
+    }
+
+    async function handleReportSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('report-btn');
+      btn.innerText = "Submitting...";
+      btn.disabled = true;
+
+      try {
+        await submitFieldReport({
+          location: document.getElementById('report-location').value,
+          actual_condition: document.getElementById('report-condition').value,
+          report: document.getElementById('report-notes').value,
+          reported_by: document.getElementById('report-officer').value
+        });
+        alert("Field report recorded successfully! Stored in field_reports table.");
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.innerText = "Submit Field Report to Database";
+        btn.disabled = false;
+      }
+    }
+
+    loadAlerts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Slope Safe – Landslide Early Warning System",
+  "description": "AI-Powered Early Warning and Landslide Risk Intelligence System for the North Eastern Region of India (SIH26001).",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

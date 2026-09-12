@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope Safe – Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      ⛰️ Slope Safe
+      <span class="badge">SIH26001</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="prediction.html">AI Prediction</a></li>
+      <li><a href="map.html">GIS Risk Map</a></li>
+      <li><a href="alerts.html">Alert Center</a></li>
+      <li><a href="performance.html">Model Performance</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="notice-banner">
+      <strong>MONITORING STATUS:</strong> North Eastern Region (NER) demonstration sensor stream active. Target region includes Nagaland, Sikkim, Mizoram, Meghalaya, and Assam corridors.
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div>
+        <h1 style="font-size: 1.8rem; font-weight: 700;">Regional Landslide Risk Dashboard</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Real-time decision intelligence for state disaster authorities</p>
+      </div>
+      <div>
+        <span class="badge-pill" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; font-size: 0.85rem;">
+          ● Data Quality: Good
+        </span>
+      </div>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="grid grid-cols-4" style="margin-bottom: 28px;">
+      <div class="card">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Total Monitored Locations</p>
+        <p id="metric-total" style="font-size: 2.2rem; font-weight: 800; color: #fff;">8</p>
+        <p style="font-size: 0.8rem; color: #60a5fa;">NER Vulnerable Slopes</p>
+      </div>
+      <div class="card">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Low-Risk Locations</p>
+        <p id="metric-low" style="font-size: 2.2rem; font-weight: 800; color: #34d399;">2</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Score &lt; 25% (Safe)</p>
+      </div>
+      <div class="card">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">High-Risk Locations</p>
+        <p id="metric-high" style="font-size: 2.2rem; font-weight: 800; color: #fb923c;">2</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Score 50–74% (Orange)</p>
+      </div>
+      <div class="card">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Critical-Risk Locations</p>
+        <p id="metric-critical" style="font-size: 2.2rem; font-weight: 800; color: #f87171;">2</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Score &gt;= 75% (Red Alert)</p>
+      </div>
+    </div>
+
+    <!-- Secondary Status -->
+    <div class="grid grid-cols-2" style="margin-bottom: 28px;">
+      <div class="card">
+        <h3>Active Warnings</h3>
+        <p id="metric-alerts" style="font-size: 1.8rem; font-weight: 700; color: #f87171; margin-bottom: 6px;">3 Active</p>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Preemptive advisories issued to BRO & local SDRF units.</p>
+        <a href="alerts.html" class="btn btn-secondary" style="font-size: 0.85rem; padding: 6px 12px;">View Alert Center →</a>
+      </div>
+      <div class="card">
+        <h3>AI Model Engine Status</h3>
+        <div style="font-size: 0.95rem; line-height: 1.8;">
+          <div><strong>Primary Model:</strong> Random Forest Classifier (v1.2)</div>
+          <div><strong>SHAP Explainability:</strong> Active (TreeExplainer Attribution)</div>
+          <div><strong>Comparison Baseline:</strong> XGBoost Classifier</div>
+          <div><strong>Validation Accuracy:</strong> 96.0% | <strong>Recall:</strong> 96.97%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Predictions Table -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Recent AI Risk Predictions</h3>
+        <a href="prediction.html" class="btn btn-primary" style="font-size: 0.85rem; padding: 6px 14px;">+ New Prediction</a>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Location</th>
+              <th>Rainfall (24h)</th>
+              <th>Moisture</th>
+              <th>Slope</th>
+              <th>Soil Type</th>
+              <th>Risk Score</th>
+              <th>Risk Level</th>
+              <th>Recommended Action</th>
+            </tr>
+          </thead>
+          <tbody id="predictions-tbody">
+            <tr>
+              <td><strong>Kohima NH-29 Bypass</strong></td>
+              <td>195.5 mm</td>
+              <td>88.4%</td>
+              <td>43.5°</td>
+              <td>Clay</td>
+              <td><strong>88.5%</strong></td>
+              <td><span class="badge-pill badge-critical">CRITICAL</span></td>
+              <td>Immediate vehicular diversion & SDMA red alert</td>
+            </tr>
+            <tr>
+              <td><strong>Gangtok - JN Road Sector</strong></td>
+              <td>178.0 mm</td>
+              <td>84.0%</td>
+              <td>39.0°</td>
+              <td>Gravelly</td>
+              <td><strong>73.0%</strong></td>
+              <td><span class="badge-pill badge-high">HIGH</span></td>
+              <td>BRO dozer team standby on route</td>
+            </tr>
+            <tr>
+              <td><strong>Aizawl Sairang Ridge</strong></td>
+              <td>125.0 mm</td>
+              <td>68.0%</td>
+              <td>32.0°</td>
+              <td>Loam</td>
+              <td><strong>46.0%</strong></td>
+              <td><span class="badge-pill badge-moderate">MODERATE</span></td>
+              <td>Periodic moisture checks & municipal watch</td>
+            </tr>
+            <tr>
+              <td><strong>Shillong Peak Slopes</strong></td>
+              <td>48.0 mm</td>
+              <td>38.0%</td>
+              <td>18.0°</td>
+              <td>Silt</td>
+              <td><strong>14.5%</strong></td>
+              <td><span class="badge-pill badge-low">LOW</span></td>
+              <td>Routine meteorological surveillance</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    async function initDashboard() {
+      try {
+        const locs = await fetchLocations();
+        if (locs && locs.length) {
+          document.getElementById('metric-total').innerText = locs.length;
+          const low = locs.filter(l => l.severity === 'LOW' || l.risk_level === 'LOW').length;
+          const high = locs.filter(l => l.severity === 'HIGH' || l.risk_level === 'HIGH').length;
+          const crit = locs.filter(l => l.severity === 'CRITICAL' || l.risk_level === 'CRITICAL').length;
+          document.getElementById('metric-low').innerText = low;
+          document.getElementById('metric-high').innerText = high;
+          document.getElementById('metric-critical').innerText = crit;
+        }
+      } catch (e) {
+        console.log("Using cached dashboard counts", e);
+      }
+    }
+    initDashboard();
+  </script>
+</body>
+</html>

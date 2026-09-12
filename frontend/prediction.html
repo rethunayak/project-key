@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope Safe – AI Prediction</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    .waterfall-bar {
+      height: 12px;
+      border-radius: 6px;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      ⛰️ Slope Safe
+      <span class="badge">SIH26001</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="prediction.html" class="active">AI Prediction</a></li>
+      <li><a href="map.html">GIS Risk Map</a></li>
+      <li><a href="alerts.html">Alert Center</a></li>
+      <li><a href="performance.html">Model Performance</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="notice-banner">
+      <strong>AI DECISION SUPPORT NOTICE:</strong> This system computes probability of slope failure based on terrain pore pressure and shear dynamics. It does not claim an absolute guarantee of failure, but provides decision-support risk scores and early warning actions.
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div>
+        <h1 style="font-size: 1.8rem; font-weight: 700;">Landslide Risk Assessment & XAI</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Enter physical terrain and precipitation parameters to evaluate localized slope risk.</p>
+      </div>
+      <div id="data-quality-indicator">
+        <span class="badge-pill" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981;">
+          Data Quality: Good
+        </span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2">
+      <!-- Input Form Card -->
+      <div class="card">
+        <h3>Terrain & Meteorological Input</h3>
+
+        <!-- Preset selection -->
+        <div style="margin-bottom: 16px; padding: 10px; background-color: #0f172a; border-radius: 6px;">
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Quick Test Presets:</span>
+          <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary" style="font-size: 0.75rem; padding: 4px 8px;" onclick="loadPreset('kohima')">Kohima High Monsoon</button>
+            <button type="button" class="btn btn-secondary" style="font-size: 0.75rem; padding: 4px 8px;" onclick="loadPreset('aizawl')">Aizawl Moderate</button>
+            <button type="button" class="btn btn-secondary" style="font-size: 0.75rem; padding: 4px 8px;" onclick="loadPreset('shillong')">Shillong Low</button>
+          </div>
+        </div>
+
+        <form id="prediction-form" onsubmit="handlePredictSubmit(event)">
+          <div class="form-group">
+            <label for="location">Location Name / Corridor</label>
+            <input type="text" id="location" class="form-control" value="Kohima NH-29 Mile 14" required>
+          </div>
+
+          <div class="grid grid-cols-2" style="gap: 12px;">
+            <div class="form-group">
+              <label for="rainfall">Cumulative 24h Rainfall (mm)</label>
+              <input type="number" id="rainfall" class="form-control" min="0" step="0.1" value="180.0" required oninput="validateForm()">
+            </div>
+            <div class="form-group">
+              <label for="soil_moisture">Soil Moisture Saturation (%)</label>
+              <input type="number" id="soil_moisture" class="form-control" min="0" max="100" step="0.1" value="84.0" required oninput="validateForm()">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2" style="gap: 12px;">
+            <div class="form-group">
+              <label for="slope">Terrain Slope Angle (°)</label>
+              <input type="number" id="slope" class="form-control" min="0" max="90" step="0.1" value="42.0" required oninput="validateForm()">
+            </div>
+            <div class="form-group">
+              <label for="elevation">Topographic Elevation (m)</label>
+              <input type="number" id="elevation" class="form-control" min="0" step="1" value="1600" required oninput="validateForm()">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2" style="gap: 12px;">
+            <div class="form-group">
+              <label for="soil_type">Geological Soil Type</label>
+              <select id="soil_type" class="form-control">
+                <option value="clay" selected>Clay (High moisture retention)</option>
+                <option value="silt">Silt (Moderate cohesion)</option>
+                <option value="loam">Loam (Mixed organic)</option>
+                <option value="gravelly">Gravelly (Coarse scree)</option>
+                <option value="sand">Sand (Rapid drainage)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="previous_landslide">Previous Landslide Precedent</label>
+              <select id="previous_landslide" class="form-control">
+                <option value="1" selected>Yes (Prior slope failure scar)</option>
+                <option value="0">No (Undisturbed slope)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" id="predict-btn" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;">
+            ⚡ Predict Risk
+          </button>
+        </form>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card" id="result-card">
+        <h3>AI Prediction Outcome</h3>
+        
+        <div id="initial-placeholder" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+          <p style="font-size: 2.5rem; margin-bottom: 10px;">📊</p>
+          <p>Click <strong>"Predict Risk"</strong> to compute real machine learning probability and generate the SHAP explanation factors.</p>
+        </div>
+
+        <div id="result-content" style="display: none;">
+          <div style="background-color: #0f172a; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <div>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Calculated Risk Score:</span>
+                <div id="res-score" style="font-size: 2.4rem; font-weight: 800; color: #f87171;">87%</div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Operational Category:</span>
+                <div id="res-level" style="margin-top: 4px;">
+                  <span class="badge-pill badge-critical">CRITICAL</span>
+                </div>
+              </div>
+            </div>
+            <p id="res-notice" style="font-size: 0.75rem; color: #94a3b8; margin-top: 6px;">
+              Calibrated prototype model (0-24 Low, 25-49 Moderate, 50-74 High, 75-100 Critical).
+            </p>
+          </div>
+
+          <!-- SHAP Explanation Box -->
+          <div style="margin-bottom: 18px;">
+            <h4 style="font-size: 1rem; color: #cbd5e1; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              🔍 Why this risk? (Explainable AI - SHAP)
+            </h4>
+            <div id="shap-list" style="font-size: 0.9rem; line-height: 1.8;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Recommended Action -->
+          <div style="background-color: rgba(220, 38, 38, 0.12); border-left: 4px solid #ef4444; padding: 14px; border-radius: 6px;">
+            <h4 style="font-size: 0.95rem; color: #fca5a5; margin-bottom: 4px;">Recommended Disaster Management Action:</h4>
+            <p id="res-action" style="font-size: 0.9rem; color: #fecaca; line-height: 1.5;">
+              Field inspection and early warning. Preemptive vehicular diversion along NH-29 corridor.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function validateForm() {
+      const rf = parseFloat(document.getElementById('rainfall').value);
+      const sm = parseFloat(document.getElementById('soil_moisture').value);
+      const sl = parseFloat(document.getElementById('slope').value);
+      const el = parseFloat(document.getElementById('elevation').value);
+      const ind = document.getElementById('data-quality-indicator');
+
+      let isValid = true;
+      let warn = "";
+      if (rf < 0) { isValid = false; warn = "Negative rainfall"; }
+      if (sm < 0 || sm > 100) { isValid = false; warn = "Moisture out of range 0-100%"; }
+      if (sl < 0 || sl > 90) { isValid = false; warn = "Slope out of range 0-90°"; }
+      if (el < 0) { isValid = false; warn = "Negative elevation"; }
+
+      if (isValid) {
+        ind.innerHTML = `<span class="badge-pill" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981;">Data Quality: Good</span>`;
+      } else {
+        ind.innerHTML = `<span class="badge-pill" style="background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444;">Data Quality: Warning (${warn})</span>`;
+      }
+    }
+
+    function loadPreset(key) {
+      if (key === 'kohima') {
+        document.getElementById('location').value = "Kohima NH-29 Mile 14";
+        document.getElementById('rainfall').value = 195.0;
+        document.getElementById('soil_moisture').value = 88.0;
+        document.getElementById('slope').value = 43.5;
+        document.getElementById('elevation').value = 1450;
+        document.getElementById('soil_type').value = "clay";
+        document.getElementById('previous_landslide').value = "1";
+      } else if (key === 'aizawl') {
+        document.getElementById('location').value = "Aizawl Sairang Ridge";
+        document.getElementById('rainfall').value = 115.0;
+        document.getElementById('soil_moisture').value = 65.0;
+        document.getElementById('slope').value = 30.0;
+        document.getElementById('elevation').value = 1100;
+        document.getElementById('soil_type').value = "loam";
+        document.getElementById('previous_landslide').value = "0";
+      } else if (key === 'shillong') {
+        document.getElementById('location').value = "Shillong Peak Foothills";
+        document.getElementById('rainfall').value = 40.0;
+        document.getElementById('soil_moisture').value = 35.0;
+        document.getElementById('slope').value = 15.0;
+        document.getElementById('elevation').value = 1900;
+        document.getElementById('soil_type').value = "silt";
+        document.getElementById('previous_landslide').value = "0";
+      }
+      validateForm();
+    }
+
+    async function handlePredictSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('predict-btn');
+      btn.innerText = "Computing ML Inference...";
+      btn.disabled = true;
+
+      const payload = {
+        location: document.getElementById('location').value,
+        rainfall: parseFloat(document.getElementById('rainfall').value),
+        soil_moisture: parseFloat(document.getElementById('soil_moisture').value),
+        slope: parseFloat(document.getElementById('slope').value),
+        elevation: parseFloat(document.getElementById('elevation').value),
+        soil_type: document.getElementById('soil_type').value,
+        previous_landslide: parseInt(document.getElementById('previous_landslide').value)
+      };
+
+      try {
+        const res = await predictRisk(payload);
+        document.getElementById('initial-placeholder').style.display = 'none';
+        document.getElementById('result-content').style.display = 'block';
+
+        document.getElementById('res-score').innerText = `${res.risk_score}%`;
+        document.getElementById('res-level').innerHTML = getRiskBadge(res.risk_level);
+        document.getElementById('res-action').innerText = res.recommended_action;
+
+        // Render SHAP
+        const shapList = document.getElementById('shap-list');
+        shapList.innerHTML = '';
+        if (res.shap_explanations && res.shap_explanations.length) {
+          res.shap_explanations.forEach(factor => {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.justifyContent = 'space-between';
+            row.style.padding = '4px 0';
+            row.style.borderBottom = '1px solid rgba(51, 65, 85, 0.4)';
+
+            const color = factor.influence === 'Strong influence' ? '#f87171' : (factor.influence === 'Moderate influence' ? '#fbbf24' : '#94a3b8');
+            row.innerHTML = `
+              <div>
+                <strong>${factor.label}</strong>
+                <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 6px;">${factor.detail}</span>
+              </div>
+              <div style="color: ${color}; font-weight: 600;">
+                ${factor.influence}
+              </div>
+            `;
+            shapList.appendChild(row);
+          });
+        }
+      } catch (err) {
+        alert("Prediction error: " + err.message);
+      } finally {
+        btn.innerText = "⚡ Predict Risk";
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope Safe – Landslide Early Warning & Risk Intelligence System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      ⛰️ Slope Safe
+      <span class="badge">SIH26001</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="prediction.html">AI Prediction</a></li>
+      <li><a href="map.html">GIS Risk Map</a></li>
+      <li><a href="alerts.html">Alert Center</a></li>
+      <li><a href="performance.html">Model Performance</a></li>
+    </ul>
+  </nav>
+
+  <div class="container" style="text-align: center; padding-top: 60px;">
+    <div class="notice-banner" style="max-width: 800px; margin: 0 auto 30px auto;">
+      ⚠️ <strong>PROTOTYPE NOTICE:</strong> Initial dataset labeled as DEMO/TRAINING DATA. Risk score categories (0-24 Low, 25-49 Moderate, 50-74 High, 75-100 Critical) require calibration against local historical records and geotechnical domain thresholds prior to operational deployment.
+    </div>
+
+    <h1 style="font-size: 2.8rem; font-weight: 800; margin-bottom: 12px; color: #f8fafc;">
+      Slope Safe
+    </h1>
+    <h2 style="font-size: 1.4rem; font-weight: 600; color: #60a5fa; margin-bottom: 8px;">
+      AI-Powered Early Warning & Dynamic Landslide Risk System
+    </h2>
+    <p style="font-size: 1.15rem; color: #94a3b8; max-width: 700px; margin: 0 auto 36px auto;">
+      <em>From Monitoring to Prediction — From Prediction to Early Action.</em>
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 50px;">
+      <a href="dashboard.html" class="btn btn-primary" style="padding: 14px 28px; font-size: 1.05rem;">📊 Dashboard</a>
+      <a href="map.html" class="btn btn-secondary" style="padding: 14px 28px; font-size: 1.05rem;">🗺️ Risk Map</a>
+      <a href="prediction.html" class="btn btn-secondary" style="padding: 14px 28px; font-size: 1.05rem;">🧠 AI Prediction</a>
+      <a href="alerts.html" class="btn btn-danger" style="padding: 14px 28px; font-size: 1.05rem;">🚨 Active Alerts</a>
+    </div>
+
+    <div class="card" style="text-align: left; max-width: 900px; margin: 0 auto;">
+      <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Core Disaster Intelligence Workflow</h3>
+      <div style="font-family: monospace; font-size: 0.95rem; color: #cbd5e1; line-height: 1.9; padding-top: 10px;">
+        Data Sources (Rainfall, Soil Moisture, Slope, Elevation, Soil Type, History)<br>
+        ↓ Data Cleaning & Validation (Zero-check, physical domain boundaries)<br>
+        ↓ Feature Preparation & Categorical Encoding<br>
+        ↓ Machine Learning Model (Random Forest & XGBoost comparative selection)<br>
+        ↓ Risk Score (0–100% calibrated probability) & Operational Risk Level<br>
+        ↓ Explainable AI using SHAP (Identifies exact causal drivers per event)<br>
+        ↓ Decision Support via GIS Risk Map, Active Warning Broadcasts & Early Actions<br>
+        ↓ Ground Truth Field Feedback Loop for Continuous Model Recalibration
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
